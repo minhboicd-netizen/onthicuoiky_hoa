@@ -3,17 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phiếu Trả Lời Điện Tử - Hóa Học 12</title>
+  <title>Luyện Thi Hóa Học 12 - Chọn Đề</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* CSS cho các nút bấm giống phiếu trắc nghiệm */
     .mcq-btn { transition: all 0.2s ease; }
     .mcq-selected { background-color: #10b981 !important; color: white !important; border-color: #10b981 !important; transform: scale(1.05); }
     .tf-selected { background-color: #10b981 !important; color: white !important; border-color: #10b981 !important; }
-    
     .correct-ans { background-color: #22c55e !important; color: white !important; border-color: #22c55e !important; }
     .wrong-ans { background-color: #ef4444 !important; color: white !important; border-color: #ef4444 !important; }
-    
     .correct-row { border-color: #4ade80 !important; background-color: #f0fdf4 !important; }
     .wrong-row { border-color: #f87171 !important; background-color: #fef2f2 !important; }
   </style>
@@ -24,98 +21,38 @@
     </div>
 
   <script>
-    // ================= TỰ ĐỘNG NẠP DỮ LIỆU ĐÁP ÁN 3 ĐỀ HÓA HỌC =================
-    const examData = [];
+    // ================= DỮ LIỆU ĐỀ THI (84 CÂU) =================
+    const rawExamData = [];
+    const mcqAns = [2, 0, 3, 3, 3, 0, 0, 1, 0, 0, 2, 0, 1, 0, 2, 2, 0, 0, 0, 2, 1, 1, 2, 0, 2, 2, 0, 0, 2, 2, 1, 3, 3, 2, 3, 1, 0, 0, 0, 0, 2, 1, 1, 0, 1, 2, 3, 1, 2, 2, 2, 3, 1, 3];
+    const tfAns = [[true, true, true, false], [false, true, false, false], [true, false, false, true], [false, true, false, false], [true, false, false, false], [true, true, true, false], [true, false, true, false], [true, false, true, false], [true, false, true, false], [false, true, false, false], [true, false, false, true], [true, false, true, true]];
+    const saAns = ["29", "24", "0,04", "5", "3", "12,3", "3", "39", "168", "69", "7,88", "13,5", "2", "13", "4", "0,88", "191", "196"];
 
-    // 1. PHẦN I: 54 CÂU TRẮC NGHIỆM (18 câu x 3 Đề)
-    // Quy ước: A=0, B=1, C=2, D=3
-    const mcqAns = [
-      // Đề 1
-      2, 0, 3, 3, 3, 0, 0, 1, 0, 0, 2, 0, 1, 0, 2, 2, 0, 0,
-      // Đề 2
-      0, 2, 1, 1, 2, 0, 2, 2, 0, 0, 2, 2, 1, 3, 3, 2, 3, 1,
-      // Đề 3
-      0, 0, 0, 0, 2, 1, 1, 0, 1, 2, 3, 1, 2, 2, 2, 3, 1, 3
-    ];
-    for(let i = 0; i < 54; i++) {
-        let de = Math.floor(i / 18) + 1;
-        let cau = (i % 18) + 1;
-        examData.push({
-            id: "mcq_" + i,
-            type: "multiple_choice",
-            question: `ĐỀ ${de} <br/> PHẦN I - CÂU ${cau}`,
-            options: ["A", "B", "C", "D"],
-            correct_answer: mcqAns[i]
-        });
+    // Nạp Trắc nghiệm
+    for(let i=0; i<54; i++) {
+      rawExamData.push({ id: `mcq_${i}`, type: 'multiple_choice', set: Math.floor(i/18)+1, num: (i%18)+1, options: ["A","B","C","D"], correct_answer: mcqAns[i] });
+    }
+    // Nạp Đúng/Sai
+    for(let i=0; i<12; i++) {
+      rawExamData.push({ id: `tf_${i}`, type: 'true_false', set: Math.floor(i/4)+1, num: (i%4)+1, statements: [{text:"Ý a", is_true: tfAns[i][0]},{text:"Ý b", is_true: tfAns[i][1]},{text:"Ý c", is_true: tfAns[i][2]},{text:"Ý d", is_true: tfAns[i][3]}] });
+    }
+    // Nạp Trả lời ngắn
+    for(let i=0; i<18; i++) {
+      rawExamData.push({ id: `sa_${i}`, type: 'short_answer', set: Math.floor(i/6)+1, num: (i%6)+1, correct_answer: saAns[i] });
     }
 
-    // 2. PHẦN II: 12 CÂU ĐÚNG/SAI (4 câu x 3 Đề)
-    const tfAns = [
-      // Đề 1
-      [true, true, true, false],   // Câu 1
-      [false, true, false, false], // Câu 2
-      [true, false, false, true],  // Câu 3
-      [false, true, false, false], // Câu 4
-      // Đề 2
-      [true, false, false, false], // Câu 1
-      [true, true, true, false],   // Câu 2
-      [true, false, true, false],  // Câu 3
-      [true, false, true, false],  // Câu 4
-      // Đề 3
-      [true, false, true, false],  // Câu 1
-      [false, true, false, false], // Câu 2
-      [true, false, false, true],  // Câu 3
-      [true, false, true, true]    // Câu 4
-    ];
-    for(let i = 0; i < 12; i++) {
-        let de = Math.floor(i / 4) + 1;
-        let cau = (i % 4) + 1;
-        examData.push({
-            id: "tf_" + i,
-            type: "true_false",
-            question: `ĐỀ ${de} <br/> PHẦN II - CÂU ${cau} (Đúng/Sai)`,
-            statements: [
-                { text: "Ý a", is_true: tfAns[i][0] },
-                { text: "Ý b", is_true: tfAns[i][1] },
-                { text: "Ý c", is_true: tfAns[i][2] },
-                { text: "Ý d", is_true: tfAns[i][3] }
-            ]
-        });
-    }
-
-    // 3. PHẦN III: 18 CÂU TRẢ LỜI NGẮN (6 câu x 3 Đề)
-    const saAns = [
-      // Đề 1
-      "29", "24", "0,04", "5", "3", "12,3",
-      // Đề 2
-      "3", "39", "168", "69", "7,88", "13,5",
-      // Đề 3
-      "2", "13", "4", "0,88", "191", "196"
-    ];
-    for(let i = 0; i < 18; i++) {
-        let de = Math.floor(i / 6) + 1;
-        let cau = (i % 6) + 1;
-        examData.push({
-            id: "sa_" + i,
-            type: "short_answer",
-            question: `ĐỀ ${de} <br/> PHẦN III - CÂU ${cau} (Trả lời ngắn)`,
-            correct_answer: saAns[i]
-        });
-    }
-
-    // ================= LOGIC ĐIỀU HƯỚNG =================
+    // ================= QUẢN LÝ TRẠNG THÁI =================
     let queue = [];
+    let activeData = [];
     let totalQuestions = 0;
     let stats = { wrong: 0 };
     let currentQ = null;
     let feedbackMode = false;
     let isCurrentCorrect = false;
-
+    let isStarted = false;
     let userMcqAns = null;
     let userTfAns = [];
     let userShortAns = "";
 
-    // Thuật toán xáo trộn câu hỏi ngẫu nhiên
     function shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -124,18 +61,26 @@
       return array;
     }
 
-    function initApp() {
-      let initialQueue = examData.map(q => q.id);
+    // Hàm bắt đầu làm bài theo lựa chọn
+    function startExam(choice) {
+      if (choice === 'all') {
+        activeData = [...rawExamData];
+      } else {
+        activeData = rawExamData.filter(q => q.set === choice);
+      }
+      
+      let initialQueue = activeData.map(q => q.id);
       queue = shuffleArray(initialQueue);
-      totalQuestions = examData.length;
+      totalQuestions = activeData.length;
       stats.wrong = 0;
+      isStarted = true;
       loadNextQuestion();
     }
 
     function loadNextQuestion() {
       if (queue.length === 0) { renderFinishScreen(); return; }
       const currentId = queue[0];
-      currentQ = examData.find(q => q.id === currentId);
+      currentQ = activeData.find(q => q.id === currentId);
       feedbackMode = false;
       userMcqAns = null;
       userTfAns = currentQ.type === 'true_false' ? new Array(currentQ.statements.length).fill(null) : [];
@@ -150,11 +95,9 @@
       } else if (currentQ.type === 'true_false') {
         isCurrentCorrect = userTfAns.every((ans, idx) => ans === currentQ.statements[idx].is_true);
       } else if (currentQ.type === 'short_answer') {
-        // Xử lý chuẩn hóa (dấu phẩy hay dấu chấm thập phân đều chấm đúng)
         const normalize = (str) => str.toString().trim().toLowerCase().replace(',', '.'); 
         isCurrentCorrect = (normalize(userShortAns) === normalize(currentQ.correct_answer).replace(',', '.'));
       }
-      
       feedbackMode = true;
       renderApp();
     }
@@ -167,132 +110,108 @@
 
     function selectMcq(idx) { if(feedbackMode) return; userMcqAns = idx; renderApp(); }
     function selectTf(stmtIdx, boolVal) { if(feedbackMode) return; userTfAns[stmtIdx] = boolVal; renderApp(); }
+    
+    // Cập nhật nút bấm mà không load lại toàn bộ trang
     function inputShortAns(val) { 
-  userShortAns = val; 
-  
-  // Chỉ tìm và cập nhật trạng thái nút bấm, KHÔNG load lại toàn bộ trang
-  let btn = document.getElementById('submitBtn');
-  if (btn) {
-    if (userShortAns.trim() !== "") {
-      btn.disabled = false;
-      btn.classList.remove('opacity-50', 'cursor-not-allowed');
-    } else {
-      btn.disabled = true;
-      btn.classList.add('opacity-50', 'cursor-not-allowed');
+      userShortAns = val; 
+      let btn = document.getElementById('submitBtn');
+      if (btn) {
+        if (userShortAns.trim() !== "") {
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+      }
     }
-  }
-}
 
-    // ================= GIAO DIỆN PHIẾU TRẢ LỜI =================
+    // ================= GIAO DIỆN =================
     function renderApp() {
       const app = document.getElementById('app');
-      const progressRatio = ((totalQuestions - queue.length) / totalQuestions) * 100;
       
+      if (!isStarted) {
+        app.innerHTML = `
+          <div class="bg-white rounded-3xl shadow-xl p-10 text-center border-t-8 border-emerald-500">
+            <h1 class="text-3xl font-black text-emerald-900 mb-2">HÓA HỌC 12</h1>
+            <p class="text-gray-500 mb-8 font-medium">Chọn bộ đề bạn muốn ôn tập</p>
+            <div class="grid grid-cols-1 gap-4">
+              <button onclick="startExam(1)" class="py-4 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-2xl transition-all text-xl">Đề số 1</button>
+              <button onclick="startExam(2)" class="py-4 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-2xl transition-all text-xl">Đề số 2</button>
+              <button onclick="startExam(3)" class="py-4 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold rounded-2xl transition-all text-xl">Đề số 3</button>
+              <div class="h-px bg-gray-100 my-2"></div>
+              <button onclick="startExam('all')" class="py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl transition-all text-xl shadow-lg shadow-emerald-200">Làm cả 3 đề (84 câu)</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const progressRatio = ((totalQuestions - queue.length) / totalQuestions) * 100;
       const progressHtml = `
         <div class="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-emerald-100 text-center">
-          <div class="text-sm font-bold text-emerald-500 mb-1 tracking-widest uppercase">Tiến độ cày đề Hóa</div>
+          <div class="text-sm font-bold text-emerald-500 mb-1 tracking-widest uppercase">Tiến độ cày đề</div>
           <div class="text-2xl font-black text-emerald-900 mb-3">${totalQuestions - queue.length + 1} / ${totalQuestions}</div>
           <div class="w-full bg-emerald-100 rounded-full h-2">
             <div class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: ${progressRatio}%"></div>
           </div>
-          ${queue.length > totalQuestions ? '<p class="text-xs text-red-500 mt-2 font-bold animate-pulse">Đang làm lại các câu sai...</p>' : ''}
-        </div>
-      `;
+        </div>`;
 
       let questionHtml = `<div class="bg-white rounded-3xl shadow-lg p-8 mb-6 border-b-4 border-emerald-500">
-        <h2 class="text-3xl font-black text-center text-gray-800 mb-8 tracking-tight">${currentQ.question}</h2>`;
+        <div class="text-emerald-500 font-bold text-sm mb-2 text-center uppercase tracking-widest">Đề ${currentQ.set} - Phần ${currentQ.type === 'multiple_choice' ? 'I' : currentQ.type === 'true_false' ? 'II' : 'III'}</div>
+        <h2 class="text-3xl font-black text-center text-gray-800 mb-8 tracking-tight">CÂU ${currentQ.num}</h2>`;
 
-      // GIAO DIỆN TRẮC NGHIỆM
       if (currentQ.type === 'multiple_choice') {
-        questionHtml += `<div class="flex justify-center gap-4 sm:gap-6">`;
+        questionHtml += `<div class="flex justify-center gap-4">`;
         currentQ.options.forEach((opt, idx) => {
-          let btnClass = "mcq-btn w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full border-4 border-gray-200 text-2xl font-black text-gray-400 hover:border-emerald-300 hover:text-emerald-500 bg-white cursor-pointer shadow-sm";
-          
-          if (userMcqAns === idx) btnClass = "mcq-btn w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full border-4 mcq-selected text-2xl font-black shadow-md";
-          
+          let btnClass = "mcq-btn w-16 h-16 flex items-center justify-center rounded-full border-4 border-gray-200 text-2xl font-black text-gray-400 hover:border-emerald-300 bg-white shadow-sm";
+          if (userMcqAns === idx) btnClass += " mcq-selected";
           if (feedbackMode) {
-            if (idx === currentQ.correct_answer) {
-              btnClass = "mcq-btn w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full border-4 correct-ans text-2xl font-black shadow-md";
-            } else if (userMcqAns === idx && !isCurrentCorrect) {
-              btnClass = "mcq-btn w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full border-4 wrong-ans text-2xl font-black shadow-md";
-            }
+            if (idx === currentQ.correct_answer) btnClass = "mcq-btn w-16 h-16 flex items-center justify-center rounded-full border-4 correct-ans text-2xl font-black";
+            else if (userMcqAns === idx && !isCurrentCorrect) btnClass = "mcq-btn w-16 h-16 flex items-center justify-center rounded-full border-4 wrong-ans text-2xl font-black";
           }
           questionHtml += `<button onclick="selectMcq(${idx})" class="${btnClass}" ${feedbackMode ? 'disabled' : ''}>${opt}</button>`;
         });
         questionHtml += `</div>`;
-      }
-
-      // GIAO DIỆN ĐÚNG/SAI
-      if (currentQ.type === 'true_false') {
+      } else if (currentQ.type === 'true_false') {
         questionHtml += `<div class="space-y-4">`;
         currentQ.statements.forEach((stmt, idx) => {
           const isStmtCorrect = (userTfAns[idx] === stmt.is_true);
-          let btnTrueClass = userTfAns[idx] === true ? "tf-selected" : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200";
-          let btnFalseClass = userTfAns[idx] === false ? "tf-selected" : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200";
-          let rowFeedback = '';
-          let rowBorder = 'border-gray-100';
-
-          if (feedbackMode) {
-            if (isStmtCorrect) {
-              rowBorder = 'correct-row';
-              rowFeedback = `<span class="ml-3 text-xl">✅</span>`;
-            } else {
-              rowBorder = 'wrong-row';
-              rowFeedback = `<span class="ml-3 text-xl">❌ <span class="text-sm font-bold text-red-500">(${stmt.is_true ? 'Đúng' : 'Sai'})</span></span>`;
-            }
-          }
-
+          let btnTrueClass = userTfAns[idx] === true ? "tf-selected" : "bg-gray-100 text-gray-500 hover:bg-gray-200";
+          let btnFalseClass = userTfAns[idx] === false ? "tf-selected" : "bg-gray-100 text-gray-500 hover:bg-gray-200";
+          let feedback = feedbackMode ? (isStmtCorrect ? '✅' : `❌ (${stmt.is_true ? 'Đ' : 'S'})`) : '';
           questionHtml += `
-            <div class="flex items-center justify-between p-4 border-2 ${rowBorder} rounded-2xl transition-all">
+            <div class="flex items-center justify-between p-4 border-2 ${feedbackMode ? (isStmtCorrect ? 'correct-row' : 'wrong-row') : 'border-gray-100'} rounded-2xl transition-all">
               <span class="text-2xl font-black text-gray-700 w-16">${stmt.text}</span>
-              <div class="flex gap-3 shrink-0">
-                <button onclick="selectTf(${idx}, true)" class="w-20 py-3 rounded-xl font-bold border-2 transition-all text-lg ${btnTrueClass}" ${feedbackMode ? 'disabled' : ''}>Đúng</button>
-                <button onclick="selectTf(${idx}, false)" class="w-20 py-3 rounded-xl font-bold border-2 transition-all text-lg ${btnFalseClass}" ${feedbackMode ? 'disabled' : ''}>Sai</button>
-              </div>
-              <div class="w-16 flex justify-end">${rowFeedback}</div>
-            </div>
-          `;
+              <div class="flex gap-3"><button onclick="selectTf(${idx}, true)" class="w-16 py-3 rounded-xl font-bold border-2 ${btnTrueClass}" ${feedbackMode ? 'disabled' : ''}>Đ</button>
+              <button onclick="selectTf(${idx}, false)" class="w-16 py-3 rounded-xl font-bold border-2 ${btnFalseClass}" ${feedbackMode ? 'disabled' : ''}>S</button></div>
+              <div class="w-20 text-right font-bold">${feedback}</div>
+            </div>`;
         });
         questionHtml += `</div>`;
-      }
-
-      // GIAO DIỆN TRẢ LỜI NGẮN
-      if (currentQ.type === 'short_answer') {
+      } else {
         questionHtml += `
           <div class="mt-4">
             <input type="text" oninput="inputShortAns(this.value)" value="${userShortAns}" placeholder="Nhập đáp án..." 
-class="w-full p-6 border-4 border-gray-200 rounded-2xl focus:border-indigo-500 focus:outline-none transition-all text-3xl font-black text-center text-indigo-900" ${feedbackMode ? 'disabled' : ''}
-onkeydown="if(event.key === 'Enter' && this.value.trim() !== '') checkAnswer()">
-            ${feedbackMode && !isCurrentCorrect ? `<p class="mt-4 text-center text-red-600 font-bold bg-red-50 p-4 rounded-xl border-2 border-red-200">Đáp án chính xác: <span class="text-2xl">${currentQ.correct_answer}</span></p>` : ''}
-          </div>
-        `;
+            class="w-full p-6 border-4 border-gray-200 rounded-2xl focus:border-emerald-500 focus:outline-none transition-all text-3xl font-black text-center text-emerald-900" ${feedbackMode ? 'disabled' : ''}
+            onkeydown="if(event.key === 'Enter' && this.value.trim() !== '') checkAnswer()">
+            ${feedbackMode && !isCurrentCorrect ? `<p class="mt-4 text-center text-red-600 font-bold bg-red-50 p-4 rounded-xl border-2 border-red-200">Đáp án đúng: <span class="text-2xl">${currentQ.correct_answer}</span></p>` : ''}
+          </div>`;
       }
 
       questionHtml += `</div>`;
 
-      // NÚT KIỂM TRA & TIẾP TỤC
       let actionHtml = '';
       if (!feedbackMode) {
-        let ready = (currentQ.type === 'multiple_choice' && userMcqAns !== null) || 
-                    (currentQ.type === 'true_false' && !userTfAns.includes(null)) ||
-                    (currentQ.type === 'short_answer' && userShortAns.trim() !== "");
-                    
-        // Tự động nhận diện màu môn học (Hóa: emerald, Lý: indigo)
-        let btnColor = document.body.className.includes('emerald') ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200';
-
-        actionHtml = `<button id="submitBtn" onclick="checkAnswer()" ${!ready ? 'disabled' : ''} class="w-full ${btnColor} shadow-xl text-white font-black py-5 rounded-2xl text-xl transition-all uppercase tracking-widest ${!ready ? 'opacity-50 cursor-not-allowed' : ''}">Chốt Đáp Án</button>`;
+        let ready = (currentQ.type === 'multiple_choice' && userMcqAns !== null) || (currentQ.type === 'true_false' && !userTfAns.includes(null)) || (currentQ.type === 'short_answer' && userShortAns.trim() !== "");
+        actionHtml = `<button id="submitBtn" onclick="checkAnswer()" ${!ready ? 'disabled' : ''} class="w-full bg-emerald-500 hover:bg-emerald-600 shadow-xl shadow-emerald-200 text-white font-black py-5 rounded-2xl text-xl transition-all uppercase tracking-widest ${!ready ? 'opacity-50 cursor-not-allowed' : ''}">Chốt Đáp Án</button>`;
       } else {
         const fbText = isCurrentCorrect ? '✅ CHÍNH XÁC!' : '❌ SAI RỒI!';
-        let btnColor = document.body.className.includes('emerald') ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-green-600 hover:bg-green-700';
-        if (!isCurrentCorrect) btnColor = 'bg-red-500 hover:bg-red-600';
-
         actionHtml = `
           <div class="p-2 rounded-2xl border-2 flex items-center justify-between ${isCurrentCorrect ? 'bg-green-50 border-green-500 text-green-700' : 'bg-red-50 border-red-500 text-red-700'} shadow-sm">
             <span class="font-black text-2xl pl-4">${fbText}</span>
-            <button id="nextBtn" onclick="nextStep()" class="px-10 py-4 font-black rounded-xl text-white shadow-md ${btnColor} transition-all text-xl uppercase tracking-widest">Tiếp tục ⏭</button>
+            <button id="nextBtn" onclick="nextStep()" class="px-10 py-4 font-black rounded-xl text-white shadow-md ${isCurrentCorrect ? 'bg-green-600' : 'bg-red-600'} transition-all text-xl uppercase tracking-widest">Tiếp tục ⏭</button>
           </div>
-          <script>setTimeout(() => { let n = document.getElementById('nextBtn'); if(n) n.focus(); }, 50);<\/script>
-        `;
+          <script>setTimeout(() => { let n = document.getElementById('nextBtn'); if(n) n.focus(); }, 50);<\/script>`;
       }
       app.innerHTML = progressHtml + questionHtml + actionHtml;
     }
@@ -302,20 +221,12 @@ onkeydown="if(event.key === 'Enter' && this.value.trim() !== '') checkAnswer()">
         <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-md w-full text-center mx-auto mt-10 border-t-8 border-emerald-500">
           <div class="text-6xl mb-6">🏆</div>
           <h1 class="text-4xl font-black text-emerald-900 mb-4 uppercase tracking-tighter">Hoàn Thành!</h1>
-          <p class="text-gray-500 mb-8 font-medium text-lg">Bạn đã "diệt gọn" 84 câu Hóa Học (Gồm 3 Đề thi). Quá đỉnh!</p>
-          <div class="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
-            <p class="text-gray-500 font-bold uppercase tracking-widest text-sm mb-2">Số lần điền sai cần khắc phục</p>
-            <p class="text-red-500 font-black text-5xl">${stats.wrong}</p>
-          </div>
-          <button onclick="initApp()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-5 px-4 rounded-2xl transition-all shadow-xl shadow-emerald-200 uppercase tracking-widest text-xl">
-            Làm lại từ đầu
-          </button>
-        </div>
-      `;
+          <p class="text-gray-500 mb-8 font-medium text-lg">Bạn đã hoàn thành bộ đề đã chọn.</p>
+          <button onclick="location.reload()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-5 px-4 rounded-2xl transition-all shadow-xl shadow-emerald-200 uppercase tracking-widest text-xl">Làm đề khác</button>
+        </div>`;
     }
 
-    // Khởi chạy khi tải trang
-    window.onload = initApp;
+    window.onload = renderApp;
   </script>
 </body>
 </html>
